@@ -35,9 +35,17 @@ app.add_middleware(
 # Database Setup (SQLite - In-Memory)
 # ============================================
 
+import os
+
+# Get database path from environment variable (for Fly.io) or use default
+DATABASE_PATH = os.getenv("DATABASE_URL", "todos.db")
+# Remove 'file:' prefix if present (Fly.io format)
+if DATABASE_PATH.startswith("file:"):
+    DATABASE_PATH = DATABASE_PATH[5:]
+
 def get_db_connection():
     """Create a database connection with row factory for dict-like access"""
-    conn = sqlite3.connect("todos.db")
+    conn = sqlite3.connect(DATABASE_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 

@@ -30,6 +30,9 @@ COPY . .
 # Expose port 8000 for the FastAPI server
 EXPOSE 8000
 
+# Create directory for persistent data (for SQLite database)
+RUN mkdir -p /data
+
 # Health check to ensure the service is running
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/')" || exit 1

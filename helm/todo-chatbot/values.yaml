@@ -1,0 +1,132 @@
+# Default values for todo-chatbot
+# ================================
+# This is a YAML-formatted file.
+# All values are configurable environment variables.
+
+# ============================================
+# Global Configuration
+# ============================================
+replicaCount: 1
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# ============================================
+# Backend Configuration (FastAPI)
+# ============================================
+backend:
+  # Docker image configuration
+  image:
+    repository: todo-chatbot-backend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+  
+  # Resource limits and requests
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  
+  # Environment variables for backend
+  env:
+    # Database configuration (SQLite by default)
+    DATABASE_URL: "sqlite:///todos.db"
+    # API configuration
+    API_PREFIX: "/api"
+    # Enable/disable CORS (for development)
+    CORS_ORIGINS: "*"
+  
+  # Health check configuration
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 8000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 8000
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# ============================================
+# Frontend Configuration (Next.js)
+# ============================================
+frontend:
+  # Docker image configuration
+  image:
+    repository: todo-chatbot-frontend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  
+  # Resource limits and requests
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  
+  # Environment variables for frontend
+  env:
+    # Backend API URL - This is crucial for chatbot functionality
+    # In Kubernetes, use the backend service name
+    BACKEND_URL: "http://todo-chatbot-backend:8000"
+  
+  # Health check configuration
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 3000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# ============================================
+# Ingress Configuration
+# ============================================
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: todo-chatbot.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# ============================================
+# Persistent Storage (for SQLite database)
+# ============================================
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce

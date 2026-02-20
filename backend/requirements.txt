@@ -1,0 +1,10 @@
+# FastAPI and server dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.2
+
+# Database (SQLite is built-in, this is for async support)
+aiosqlite==0.19.0
+
+# CORS support (included in FastAPI, but keeping for clarity)
+python-multipart==0.0.6

@@ -333,7 +333,7 @@ services:
       - todo-data:/app
     environment:
       - DATABASE_URL=sqlite:///todos.db
-  
+
   frontend:
     build: ./frontend
     ports:

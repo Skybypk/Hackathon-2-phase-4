@@ -1,10 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from mangum import Mangum
 
 app = FastAPI()
 
 @app.get("/")
-def root():
+def root(response: Response):
+    response.headers["Content-Type"] = "application/json"
     return {"message": "Backend running on Vercel 🚀"}
 
-handler = Mangum(app) 
+handler = Mangum(app)  
